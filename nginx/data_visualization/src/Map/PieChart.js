@@ -6,6 +6,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { borderColor } from "@mui/system";
 import { colors, experimentalStyled } from "@mui/material";
 
+/* In dieser Klasse wird das Diagramm mit seinen Eigenschaften definiert
+(Typ, Farben, Winkel, Höhe, Größe usw.) */
 
 class ApexChart extends React.Component {
   constructor(props) {
@@ -75,7 +77,9 @@ class ApexChart extends React.Component {
     }
 
 
-    //Zugriff auf API mit fetch
+    /*Zugriff auf API mit fetch. Daten für den aktuellen Tag werden abgefragt
+    Gegebenfalls müsste sowohl hier als auch an der nächsten Funktion der Fall für 
+    einen Fehler abgefangen werden */
 
     getText = async (file) => {
       let myObject = await fetch(file)
@@ -90,6 +94,8 @@ class ApexChart extends React.Component {
       this.createData(heute)
       }
   }
+
+  //Erneuter Zugriff auf API um Daten für den vorherigen Tag abzufragen
 
     getText2 = async (file) => {
       let myObject = await fetch(file);
@@ -108,6 +114,7 @@ class ApexChart extends React.Component {
      
     /* Name und Anzahl in einem Array speichern, der Größe nach sortieren und 
     Top 10 Vögel mit der größten Anzahl herausfiltern */
+
     createData = (feature) => {
       let birds = [];
       for (var i = 0; i < feature.length; i++) {
@@ -120,7 +127,9 @@ class ApexChart extends React.Component {
     
 
 
-    // Anzahl der Vögel in einem Array speichern, Anzahl der Vögel außerhalb der Top 10 addieren 
+    /* Anzahl der Vögel in einem Array speichern, Anzahl der Vögel außerhalb der Top 10 addieren
+    um diese als sonstige zusammenfassen zu können */
+
     prepareChart = (feature, feature1) => {
       let amount = [];
       for (var i = 0; i < feature.length; i++) {
@@ -138,7 +147,9 @@ class ApexChart extends React.Component {
       }
       amount.push(sonstigeAmount)
 
-      // Abfrage nach dem deutschen und lateinischen Namen
+      /* Abfrage nach dem deutschen und lateinischen Namen.
+      Wenn kein deutscher Name vorhanden, wird der lateinische verwendet*/
+
       let label = [];
       for (var i = 0; i < feature.length; i++) {
         if (feature[i].germanName == "") {
@@ -167,11 +178,13 @@ class ApexChart extends React.Component {
 
     componentDidMount() {
 
-      // Datum von heute
+      // Datum von heute abfragen
+
       let date = new Date();
       let today = String(date.getFullYear()) + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
       console.log(today);
-      // Datum von gestern
+
+      // Datum von gestern abfragen 
       let date2 = new Date(date.setDate(date.getDate() - date.getDay() - 1));
       let yesterday = String(date2.getFullYear()) + '-' + String(date2.getMonth() + 1).padStart(2, '0') + '-' + String(date2.getDate()).padStart(2, '0');
       console.log(yesterday);
@@ -200,7 +213,6 @@ class ApexChart extends React.Component {
             exclusive
             onChange={this.handleAlignment}
             aria-label="text alignment"
-            
             
           >
             <ToggleButton className="heute" value="heute" aria-label="heute" onClick={() => this.getText("https://www.wiediversistmeingarten.org/api/count")} active> heute </ToggleButton>
