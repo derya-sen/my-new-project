@@ -6,6 +6,9 @@ import {getText} from './PieChart'
 import {getText2} from './PieChart'
 import ApexChart from './PieChart'
 
+
+// Funktion, um die Aktivität der Buttons zwischen gestern und heute zu ändern 
+
 export default function ToggleButtons() {
   const [alignment, setAlignment] = React.useState('heute');
 
