@@ -1,0 +1,79 @@
+version: '3.7'
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    image: api
+    container_name: api
+    volumes:
+      - ./data/uploads:/usr/src/app/uploads
+    ports:
+      - 5000:5000
+    env_file:
+      - server.env
+    environment:
+      - FLASK_CONFIG=development
+      - FLASK_ENV=development
+    depends_on:
+      - mongodb
+      - redis
+
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - 27017
+    
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    depends_on:
+      - api
+      - ui
+
+  ui:
+    build:
+      context: ./nginx/data_visualization
+      dockerfile: Dockerfile.dev
+    volumes:
+      - './nginx/data_visualization:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - api
+
+  worker:
+    image: api
+    command: rq worker --url redis://redis:6379
+    env_file:
+      - server.env
+    volumes:
+      - ./data/uploads:/usr/src/app/uploads
+    depends_on:
+      - redis
+      - api
+
+  rq-dashboard:
+    image: eoranged/rq-dashboard
+    ports:
+      - "9181:9181"
+    environment: 
+     - RQ_DASHBOARD_REDIS_URL=redis://redis:6379
+    depends_on: 
+      - redis
+
+  redis:
+    image: redis:6.2-alpine
+
+volumes:
+  db-data:
